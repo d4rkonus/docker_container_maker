@@ -81,7 +81,6 @@ main_panel(){
             5)
                 clear
                 run_container
-                read -p "Press enter to continue..."
                 ;;
             
             *)
