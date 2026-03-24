@@ -76,9 +76,11 @@ main_panel(){
                 container_maker
                 echo
                 read -p "Press enter to continue..."
+                ;;
             
             5)
-                exit 0
+                clear
+                run_container
                 ;;
             
             *)
@@ -144,6 +146,9 @@ container_maker(){
     docker run -dit --name "$CONTAINER" "$IMAGE" >/dev/null 2>&1
 }
 
+run_container(){
+    docker exec -it "$CONTAINER" >/dev/null 2>&1
+}
 
 main() {
     sleep 1
