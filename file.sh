@@ -38,7 +38,7 @@ EOF
 
 main_panel(){
     while true; docker
-    clear
+        clear
         echo -e "${greenColour}1 - List images\n${endColour}"
         echo -e "${greenColour}2 - List containers\n${endColour}"
         echo -e "${greenColour}3 - Run container\n${endColour}"
