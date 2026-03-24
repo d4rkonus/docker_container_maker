@@ -39,14 +39,16 @@ EOF
 
 check_docker(){
     if command -v docker >/dev/null 2>&1; then
-        echo -e "${greenColour}Docker is installed${endColour}."
+        echo -e "${greenColour}[+] Docker is installed${endColour}."
     else
         echo -e "${redColour}[!] Docker needs to be installed.\n"
+        sleep 2
         echo -e "${grayColour}[+] Installing Docker..."
         
-        apt update -y 
+        apt update -y >/dev/null 2>&1
         apt install -y docker.io >/dev/null 2>&1
 
+        sleep 2
         echo -e "${greenColour}[+] Docker installed successfully${endColour}"
     fi
 }
@@ -63,6 +65,7 @@ distro_select(){
 }
 
 main() {
+    sleep 1
     check_root
     say_hello
     check_docker
