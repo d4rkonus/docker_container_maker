@@ -20,7 +20,7 @@ trap 'tput cnorm; exit 1' INT TERM
 
 check_root() {
     if [[ "$(id -u)" -ne 0 ]]; then
-        echo -e "\n${redColour}[!] Please run this script as root.${endColour}"
+        echo -e "\n${redColour}[!] Please, become sudo user to run this script.${endColour}"
         exit 1
     fi
 }
@@ -36,6 +36,47 @@ cat << "EOF"
 EOF
 }
 
+main_panel(){
+    while true; docker
+    clear
+        echo -e "${greenColour}1 - List images\n${endColour}"
+        echo -e "${greenColour}2 - List containers\n${endColour}"
+        echo -e "${greenColour}3 - Run container\n${endColour}"
+        echo -e "${greenColour}4 - Exit\n${endColour}"
+    
+        read -p "Select an option: " number
+
+        case "$number" in 
+            1) 
+                docker images
+                echo "\n"
+                read -p "Press enter to continue..."
+                ;;
+
+            2) 
+                docker ps
+                echo "\n"
+                read -p "Press enter to continue..."
+                ;;
+            
+            3) 
+                distro_select
+                container_maker
+                ;;
+            
+            4)
+                exit 0
+                ;;
+            
+            *)
+                echo -e "${redColour}[!] Invalid option.${endColour}"
+                sleep 1
+                ;;
+        esac
+    done
+}
+
+
 
 check_docker(){
     if command -v docker >/dev/null 2>&1; then
@@ -50,6 +91,10 @@ check_docker(){
 
         sleep 2
         echo -e "${greenColour}[+] Docker installed successfully${endColour}\n"
+
+        echo -e "\n${yellowColour}Press Enter to continue...${endColour}"
+        read
+        clear
     fi
 }
 
@@ -57,11 +102,23 @@ distro_select(){
     echo -e "\n[+] These are the Linux distributions for docker:\n"
 
     echo -e "${yellowColour}1 -> Ubuntu${endColour}"
+    echo -e "${yellowColour}2 -> Kali Linux${endColour}"
     read -p "Select the option: " option
 
     if [[ "$option" == "1" ]]; then
+        IMAGE="ubuntu_image"
+        CONTAINER="ubuntu_container_1"
+
         echo -e "\n${yellowColour}[+] Building new ubuntu image for docker...${endColour}"
-        docker build -t ubuntu_image . >/dev/null 2>&1
+        docker build -t "$IMAGE" -f ubuntu.dockerfile . >/dev/null 2>&1
+    
+    elif [[ "$option" == "2" ]]; then
+        IMAGE="kali_image"
+        CONTAINER="kali_container_1"
+
+        echo -e "\n${yellowColour}[+] Building new kali image for docker...${endColour}"
+        docker build -t "$IMAGE" -f kali.dockerfile . >/dev/null 2>&1
+    
     else
         echo -e "\n${redColour}[!] Invalid option${endColour}"
         exit 1
@@ -69,18 +126,17 @@ distro_select(){
 }
 
 container_maker(){
-    echo -e "\n[+] Creating new container...\n"
-    docker run -dit --name ubuntu_container_1 ubuntu_image >/dev/null 2>&1
-
+    echo -e "\n${yellowColour}[+] Creating new container...${endColour}\n"
+    docker run -dit --name "$CONTAINER" "$IMAGE" >/dev/null 2>&1
 }
+
 
 main() {
     sleep 1
     check_root
     say_hello
     check_docker
-    distro_select
-    container_maker
+    main_panel
 }
 
 main
