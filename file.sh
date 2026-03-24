@@ -37,31 +37,35 @@ EOF
 }
 
 main_panel(){
-    while true; docker
+    while true; do
         clear
-        echo -e "${greenColour}1 - List images\n${endColour}"
-        echo -e "${greenColour}2 - List containers\n${endColour}"
-        echo -e "${greenColour}3 - Run container\n${endColour}"
-        echo -e "${greenColour}4 - Exit\n${endColour}"
+        echo -e "${greenColour}1 - List images${endColour}"
+        echo -e "${greenColour}2 - List containers${endColour}"
+        echo -e "${greenColour}3 - Run container${endColour}"
+        echo -e "${greenColour}4 - Exit${endColour}"
     
         read -p "Select an option: " number
 
         case "$number" in 
             1) 
+                clear
                 docker images
-                echo "\n"
+                echo
                 read -p "Press enter to continue..."
                 ;;
 
             2) 
-                docker ps
-                echo "\n"
+                clear
+                docker ps -a
+                echo
                 read -p "Press enter to continue..."
                 ;;
             
             3) 
                 distro_select
                 container_maker
+                echo
+                read -p "Press enter to continue..."
                 ;;
             
             4)
