@@ -71,7 +71,11 @@ main_panel(){
                 read -p "Press enter to continue..."
                 ;;
             
-            
+            4)
+                clear
+                container_maker
+                echo
+                read -p "Press enter to continue..."
             
             5)
                 exit 0
@@ -117,7 +121,7 @@ distro_select(){
     if [[ "$option" == "1" ]]; then
         IMAGE="ubuntu_image"
         CONTAINER="ubuntu_container_1"
-        
+
 
         echo -e "\n${yellowColour}[+] Building new ubuntu image for docker...${endColour}"
         docker build -t "$IMAGE" -f ubuntu.dockerfile . >/dev/null 2>&1
