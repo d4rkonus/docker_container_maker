@@ -41,7 +41,7 @@ check_docker(){
     if command -v docker >/dev/null 2>&1; then
         echo -e "${greenColour}[+] Docker is installed${endColour}."
     else
-        echo -e "${redColour}[!] Docker needs to be installed.\n"
+        echo -e "${redColour}\n\n[!] Docker needs to be installed.\n"
         sleep 2
         echo -e "${grayColour}[+] Installing Docker..."
         
@@ -56,12 +56,23 @@ check_docker(){
 distro_select(){
     echo -e "Select which distro for the container:\n"
 
-    echo -e "${yellowColour}1 -> Kali Linux${endColour}"
-    echo -e "${yellowColour}2 -> Ubuntu${endColour}"
-    echo -e "${yellowColour}3 -> Arch Linux${endColour}\n"
-
+    echo -e "${yellowColour}1 -> Ubuntu${endColour}"
     read -p "Select the option: " option
 
+    if [[ "$option" == "1" ]]; then
+        echo -e "${yellowColour}Building new ubuntu image for docker...${endColour}"
+        docker build -t ubuntu_image . >/dev/null 2>&1
+    else
+        echo -e "${redColour}[!] Invalid option${endColour}"
+        exit 1
+    fi
+}
+
+container_maker(){
+    echo -e "Creating new container...\n"
+    docker run -dit --name ubuntu_container_1 ubuntu_image >/dev/null 2>&1
+
+    docker exec -it ubuntu_container_1 bash >/dev/null 2>&1
 }
 
 main() {
@@ -69,6 +80,8 @@ main() {
     check_root
     say_hello
     check_docker
+    distro_select
+    container_maker
 }
 
 main
