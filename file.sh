@@ -42,10 +42,12 @@ main_panel(){
         say_hello
         echo -e "\n\n${greenColour}1 - List images${endColour}"
         echo -e "${greenColour}2 - List containers${endColour}"
-        echo -e "${greenColour}3 - Run container${endColour}"
-        echo -e "${greenColour}4 - Exit${endColour}"
+        echo -e "${greenColour}3 - Build image${endColour}"
+        echo -e "${greenColour}4 - Build container${endColour}"
+        echo -e "${greenColour}5 - Execute container${endColour}"
+        echo -e "${greenColour}6 - Exit${endColour}"
     
-        read -p "Select an option: " number
+        read -p "\n[+] Select an option: " number
 
         case "$number" in 
             1) 
@@ -63,13 +65,15 @@ main_panel(){
                 ;;
             
             3) 
+                clear
                 distro_select
-                container_maker
                 echo
                 read -p "Press enter to continue..."
                 ;;
             
-            4)
+            
+            
+            5)
                 exit 0
                 ;;
             
@@ -113,6 +117,7 @@ distro_select(){
     if [[ "$option" == "1" ]]; then
         IMAGE="ubuntu_image"
         CONTAINER="ubuntu_container_1"
+        
 
         echo -e "\n${yellowColour}[+] Building new ubuntu image for docker...${endColour}"
         docker build -t "$IMAGE" -f ubuntu.dockerfile . >/dev/null 2>&1
@@ -139,7 +144,6 @@ container_maker(){
 main() {
     sleep 1
     check_root
-    say_hello
     check_docker
     main_panel
 }
