@@ -49,30 +49,29 @@ check_docker(){
         apt install -y docker.io >/dev/null 2>&1
 
         sleep 2
-        echo -e "${greenColour}[+] Docker installed successfully${endColour}"
+        echo -e "${greenColour}[+] Docker installed successfully${endColour}\n"
     fi
 }
 
 distro_select(){
-    echo -e "Select which distro for the container:\n"
+    echo -e "\n[+] These are the Linux distributions for docker:\n"
 
     echo -e "${yellowColour}1 -> Ubuntu${endColour}"
     read -p "Select the option: " option
 
     if [[ "$option" == "1" ]]; then
-        echo -e "${yellowColour}Building new ubuntu image for docker...${endColour}"
+        echo -e "\n${yellowColour}[+] Building new ubuntu image for docker...${endColour}"
         docker build -t ubuntu_image . >/dev/null 2>&1
     else
-        echo -e "${redColour}[!] Invalid option${endColour}"
+        echo -e "\n${redColour}[!] Invalid option${endColour}"
         exit 1
     fi
 }
 
 container_maker(){
-    echo -e "Creating new container...\n"
+    echo -e "\n[+] Creating new container...\n"
     docker run -dit --name ubuntu_container_1 ubuntu_image >/dev/null 2>&1
 
-    docker exec -it ubuntu_container_1 bash >/dev/null 2>&1
 }
 
 main() {
