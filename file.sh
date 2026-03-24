@@ -47,7 +47,7 @@ main_panel(){
         echo -e "${greenColour}5 - Execute container${endColour}"
         echo -e "${greenColour}6 - Exit${endColour}"
     
-        read -p "\n[+] Select an option: " number
+        read -p "[+] Select an option: " number
 
         case "$number" in 
             1) 
@@ -81,6 +81,7 @@ main_panel(){
             5)
                 clear
                 run_container
+                read -p "Press enter to continue..."
                 ;;
             
             *)
@@ -147,7 +148,7 @@ container_maker(){
 }
 
 run_container(){
-    docker exec -it "$CONTAINER" >/dev/null 2>&1
+    docker exec -it "$CONTAINER" bash
 }
 
 main() {
