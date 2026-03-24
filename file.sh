@@ -39,7 +39,8 @@ EOF
 main_panel(){
     while true; do
         clear
-        echo -e "${greenColour}1 - List images${endColour}"
+        say_hello
+        echo -e "\n\n${greenColour}1 - List images${endColour}"
         echo -e "${greenColour}2 - List containers${endColour}"
         echo -e "${greenColour}3 - Run container${endColour}"
         echo -e "${greenColour}4 - Exit${endColour}"
