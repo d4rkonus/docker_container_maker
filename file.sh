@@ -16,7 +16,7 @@ cat << "EOF"
      | |__| (_) | | | | || (_| | | | | |  __/ |    | | | | | | (_| |   <  __/ |   
       \____\___/|_| |_|\__\__,_|_|_| |_|\___|_|    |_| |_| |_|\__,_|_|\_\___|_|   
 EOF
-                                                            echo -e "${grayColour}made by d4rkonus${endColour}\n"
+echo -e                                                                         "\n${grayColour}made by d4rkonus${endColour}\n"
 }
 
 
@@ -60,7 +60,7 @@ main_panel(){
         echo -e "${greenColour}6 - Delete containers${endColour}"
         echo -e "${greenColour}7 - Delete images${endColour}"
         echo -e "${greenColour}8 - Exit${endColour}"
-
+        echo ""
         read -p "[+] Select an option: " number
 
         case $number in
