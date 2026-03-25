@@ -55,10 +55,10 @@ main_panel(){
         echo -e "${greenColour}7 - Delete images${endColour}"
         echo -e "${greenColour}8 - Exit${endColour}"
 
-        read -p "[+] Select an option: " number
+        read -p "[+] Select an option: " numberç
+    done
 }
 
 check_root
-say_hello
 check_docker
 main_panel
