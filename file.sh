@@ -33,13 +33,14 @@ main_panel(){
     while true; do
         clear
         say_hello
-        echo -e "\n\n${greenColour}1 - List images${endColour}"
+
+        echo -e "\n${greenColour}1 - List images${endColour}"
         echo -e "${greenColour}2 - List containers${endColour}"
         echo -e "${greenColour}3 - Build image${endColour}"
         echo -e "${greenColour}4 - Build container${endColour}"
         echo -e "${greenColour}5 - Execute container${endColour}"
         echo -e "${greenColour}6 - Exit${endColour}"
-    
+
         read -p "[+] Select an option: " number
 
         case "$number" in 
@@ -56,26 +57,29 @@ main_panel(){
                 echo
                 read -p "Press enter to continue..."
                 ;;
-            
+
             3) 
                 clear
                 distro_select
-                echo
                 read -p "Press enter to continue..."
                 ;;
-            
+
             4)
                 clear
                 container_maker
-                echo
                 read -p "Press enter to continue..."
                 ;;
-            
+
             5)
                 clear
                 run_container
+                read -p "Press enter to continue..."
                 ;;
-            
+
+            6)
+                exit 0
+                ;;
+
             *)
                 echo -e "${redColour}[!] Invalid option.${endColour}"
                 sleep 1
@@ -83,7 +87,6 @@ main_panel(){
         esac
     done
 }
-
 
 
 check_docker(){
@@ -117,10 +120,10 @@ distro_select(){
         IMAGE="ubuntu_image"
         CONTAINER="ubuntu_container_1"
 
-
         echo -e "\n${yellowColour}[+] Building new ubuntu image for docker...${endColour}"
         docker build -t "$IMAGE" -f ubuntu.dockerfile . >/dev/null 2>&1
     
+
     elif [[ "$option" == "2" ]]; then
         IMAGE="kali_image"
         CONTAINER="kali_container_1"
@@ -128,6 +131,7 @@ distro_select(){
         echo -e "\n${yellowColour}[+] Building new kali image for docker...${endColour}"
         docker build -t "$IMAGE" -f kali.dockerfile . >/dev/null 2>&1
     
+
     else
         echo -e "\n${redColour}[!] Invalid option${endColour}"
         exit 1
@@ -135,13 +139,92 @@ distro_select(){
 }
 
 container_maker(){
-    echo -e "\n${yellowColour}[+] Creating new container...${endColour}\n"
+    select_image || return
+
+    echo -e "\n${yellowColour}[+] Creating container...${endColour}"
+
+    docker rm -f "$CONTAINER" >/dev/null 2>&1 || true
     docker run -dit --name "$CONTAINER" "$IMAGE" >/dev/null 2>&1
+
+    echo -e "${greenColour}[+] Container created: $CONTAINER${endColour}"
 }
 
 run_container(){
-    docker exec -it "$CONTAINER" bash
+
+    containers=$(docker ps -a --format "{{.Names}}")
+
+    if [[ -z "$containers" ]]; then
+        echo "No containers found"
+        return
+    fi
+
+    echo "Available containers:"
+
+    i=1
+    for c in $containers; do
+        echo "$i) $c"
+        i=$((i+1))
+    done
+
+    read -p "Select container: " choice
+
+    if ! [[ "$choice" =~ ^[0-9]+$ ]]; then
+        echo "Invalid input"
+        return
+    fi
+
+    i=1
+    for c in $containers; do
+        if [[ "$i" == "$choice" ]]; then
+            docker start "$c" >/dev/null 2>&1
+            docker exec -it "$c" bash
+            return
+        fi
+        i=$((i+1))
+    done
+
+    echo "Invalid option"
 }
+
+
+select_image(){
+
+    images=$(docker images --format "{{.Repository}}" | sort -u)
+
+    if [[ -z "$images" ]]; then
+        echo "No images found"
+        return 1
+    fi
+
+    echo "Available images:"
+
+    i=1
+    for img in $images; do
+        echo "$i) $img"
+        i=$((i+1))
+    done
+
+    read -p "Select image: " choice
+
+    if ! [[ "$choice" =~ ^[0-9]+$ ]]; then
+        echo "Invalid input"
+        return 1
+    fi
+
+    i=1
+    for img in $images; do
+        if [[ "$i" == "$choice" ]]; then
+            IMAGE="$img"
+            CONTAINER="$(echo "$img" | tr ':' '_')_container"
+            return
+        fi
+        i=$((i+1))
+    done
+
+    echo "Invalid option"
+    return 1
+}
+
 
 main() {
     sleep 1
