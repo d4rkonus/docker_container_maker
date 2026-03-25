@@ -19,7 +19,7 @@ distro_select() {
     if [[ $number == "1" ]]; then
         image="ubuntu"
         echo -e "\n${greenColour}[+] Bulding image...${endColour}"
-        docker build -t $image -f .ubuntu.dockerfile . &>/dev/null
+        docker build -t $image -f ubuntu.dockerfile . &>/dev/null
         echo -e "\n${yellowColour}[+] Ubuntu image successfully built!${endColour}"
         pause
     else
@@ -30,7 +30,7 @@ distro_select() {
     if [[ $number == "2" ]]; then
         image="kali"
         echo -e "\n${greenColour}[+] Bulding image...${endColour}"
-        docker build -t $image -f .kali.dockerfile . &>/dev/null
+        docker build -t $image -f kali.dockerfile . &>/dev/null
         echo -e "\n${yellowColour}[+] Kali Linux image successfully built!${endColour}"
         pause
     else
@@ -41,7 +41,7 @@ distro_select() {
     if [[ $number == "3" ]]; then
         image="arch"
         echo -e "\n${greenColour}[+] Bulding image...${endColour}"
-        docker build -t $image -f .arch.dockerfile . &>/dev/null
+        docker build -t $image -f arch.dockerfile . &>/dev/null
         echo -e "\n${yellowColour}[+] Arch Linux image successfully built!${endColour}"
         pause
     else
