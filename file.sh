@@ -7,6 +7,10 @@ redColour="\033[1;31m"
 yellowColour="\033[1;33m"
 grayColour="\033[1;37m"
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/images.sh"
+source "$SCRIPT_DIR/containers.sh"
+
 
 say_hello() {
 cat << "EOF"
@@ -73,6 +77,35 @@ main_panel(){
             2) 
                 clear
                 docker ps 
+                pause
+                ;;
+
+            3)
+                clear
+                distro_select
+                ;;
+
+            4)
+                clear
+                container_maker
+                pause
+                ;;
+
+            5)
+                clear
+                run_container
+                pause
+                ;;
+
+            6)
+                clear
+                delete_containers
+                pause
+                ;;
+
+            7)
+                clear
+                delete_images
                 pause
                 ;;
 
