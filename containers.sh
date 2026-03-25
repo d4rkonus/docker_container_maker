@@ -1,93 +1,58 @@
 #!/bin/bash
 
-# Colours
-greenColour="\033[1;32m"
-endColour="\033[0m"
-redColour="\033[1;31m"
-yellowColour="\033[1;33m"
-grayColour="\033[1;37m"
-
 container_maker() {
     select_images || return
 
     echo -e "\n${yellowColour}[+] Creating container...${endColour}"
 
-    docker rm -f "$CONTAINER" >/dev/null 2>&1 || true
-    docker run -dit --name "$CONTAINER" "$IMAGE" >/dev/null 2>&1
+    docker rm -f "$CONTAINER" &>/dev/null || true
+    docker run -dit --name "$CONTAINER" "$IMAGE" &>/dev/null
 
     echo -e "${greenColour}[+] Container created: $CONTAINER${endColour}"
 }
 
 run_container() {
-    containers=$(docker ps -a --format "{{.Names}}" 2>/dev/null)
+    mapfile -t containers < <(docker ps -a --format "{{.Names}}")
 
-    if [[ -z "$containers" ]]; then
-        echo -e "${redColour}[!] No containers found${endColour}"
+    [[ ${#containers[@]} -eq 0 ]] && {
+        echo -e "${redColour}[!] No containers${endColour}"
         return
-    fi
+    }
 
-    echo -e "${yellowColour}[+] Available containers:${endColour}"
-
-    i=1
-    for c in $containers; do
-        echo -e "${yellowColour}$i) $c${endColour}"
-        i=$((i + 1))
+    for i in "${!containers[@]}"; do
+        echo "$((i+1))) ${containers[i]}"
     done
 
     read -p "Select container: " choice
 
-    if ! [[ "$choice" =~ ^[0-9]+$ ]]; then
-        echo -e "${redColour}[!] Invalid input${endColour}"
-        return
+    if [[ "$choice" =~ ^[0-9]+$ ]] && (( choice >=1 && choice <= ${#containers[@]} )); then
+        c="${containers[choice-1]}"
+        docker start "$c" &>/dev/null
+        docker exec -it "$c" bash
+    else
+        echo -e "${redColour}[!] Invalid option${endColour}"
     fi
-
-    i=1
-    for c in $containers; do
-        if [[ "$i" == "$choice" ]]; then
-            docker start "$c" >/dev/null 2>&1
-            docker exec -it "$c" bash 2>/dev/null
-            return
-        fi
-        i=$((i + 1))
-    done
-
-    echo -e "${redColour}[!] Invalid option${endColour}"
 }
 
 delete_containers() {
-    containers=$(docker ps -a --format "{{.Names}}" 2>/dev/null)
+    mapfile -t containers < <(docker ps -a --format "{{.Names}}")
 
-    if [[ -z "$containers" ]]; then
-        echo -e "${redColour}[!] No containers found${endColour}"
+    [[ ${#containers[@]} -eq 0 ]] && {
+        echo -e "${redColour}[!] No containers${endColour}"
         return
-    fi
+    }
 
-    echo -e "${yellowColour}[+] Available containers:${endColour}"
-
-    i=1
-    for c in $containers; do
-        echo -e "${yellowColour}$i) $c${endColour}"
-        i=$((i + 1))
+    for i in "${!containers[@]}"; do
+        echo "$((i+1))) ${containers[i]}"
     done
 
-    echo -e ""
-    read -p "Select containers to delete (e.g. 1 2 3): " choices
+    read -p "Select containers to delete: " choices
 
     for choice in $choices; do
-        if ! [[ "$choice" =~ ^[0-9]+$ ]]; then
-            echo -e "\nInvalid input: $choice"
-            continue
+        if [[ "$choice" =~ ^[0-9]+$ ]] && (( choice >=1 && choice <= ${#containers[@]} )); then
+            c="${containers[choice-1]}"
+            docker rm -f "$c" &>/dev/null
+            echo -e "${redColour}[+] Deleted: $c${endColour}"
         fi
-
-        i=1
-        for c in $containers; do
-            if [[ "$i" == "$choice" ]]; then
-                echo -e "${redColour}[+] Deleting $c${endColour}"
-                docker rm -f "$c" >/dev/null 2>&1
-            fi
-            i=$((i + 1))
-        done
     done
-
-    echo -e "${greenColour}Done.${endColour}"
 }

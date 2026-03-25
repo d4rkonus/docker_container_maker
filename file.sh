@@ -11,7 +11,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/images.sh"
 source "$SCRIPT_DIR/containers.sh"
 
-
 say_hello() {
 cat << "EOF"
        ____            _        _                                   _             
@@ -20,15 +19,14 @@ cat << "EOF"
      | |__| (_) | | | | || (_| | | | | |  __/ |    | | | | | | (_| |   <  __/ |   
       \____\___/|_| |_|\__\__,_|_|_| |_|\___|_|    |_| |_| |_|\__,_|_|\_\___|_|   
 EOF
-echo -e                                                                         "\n${grayColour}made by d4rkonus${endColour}\n"
+echo -e "\n${grayColour}made by d4rkonus${endColour}\n"
 }
 
-
 check_root() {
-    if [[ "$(id -u)" -ne 0 ]]; then
+    (( id -u != 0 )) && {
         echo -e "\n${redColour}[!] Please, run as root.${endColour}"
         exit 1
-    fi
+    }
 }
 
 check_docker() {
@@ -36,10 +34,8 @@ check_docker() {
         echo -e "\n${greenColour}[+] Docker is installed${endColour}"
     else
         echo -e "\n${redColour}[!] Installing Docker...${endColour}"
-
         apt update -y &>/dev/null
         apt install -y docker.io &>/dev/null
-
         echo -e "\n${greenColour}[+] Docker installed${endColour}"
         pause
     fi
@@ -50,13 +46,12 @@ pause(){
     read -p "Press Enter to continue..."
 }
 
-
 main_panel(){
     while true; do
         clear
         say_hello
 
-        echo -e "\n${greenColour}1 - List images${endColour}"
+        echo -e "${greenColour}1 - List images${endColour}"
         echo -e "${greenColour}2 - List containers${endColour}"
         echo -e "${greenColour}3 - Build image${endColour}"
         echo -e "${greenColour}4 - Build container${endColour}"
@@ -65,61 +60,20 @@ main_panel(){
         echo -e "${greenColour}7 - Delete images${endColour}"
         echo -e "${greenColour}8 - Exit${endColour}"
         echo ""
+
         read -p "[+] Select an option: " number
 
         case $number in
-            1)
-                clear
-                docker images
-                pause
-                ;;
-
-            2) 
-                clear
-                docker ps 
-                pause
-                ;;
-
-            3)
-                clear
-                distro_select
-                ;;
-
-            4)
-                clear
-                container_maker
-                pause
-                ;;
-
-            5)
-                clear
-                run_container
-                pause
-                ;;
-
-            6)
-                clear
-                delete_containers
-                pause
-                ;;
-
-            7)
-                clear
-                delete_images
-                pause
-                ;;
-
-            8)
-                clear
-                exit 0
-                ;;
-
-            *) 
-                clear
-                echo -e "\n${redColour}[!] Invalid option, try again.${endColour}"
-                pause
-                ;;
-        esac    
+            1) clear; docker images; pause ;;
+            2) clear; docker ps -a; pause ;;
+            3) clear; distro_select; pause ;;
+            4) clear; container_maker; pause ;;
+            5) clear; run_container; pause ;;
+            6) clear; delete_containers; pause ;;
+            7) clear; delete_images; pause ;;
+            8) exit 0 ;;
+            *) echo -e "\n${redColour}[!] Invalid option${endColour}"; pause ;;
+        esac
     done
 }
 
