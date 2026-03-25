@@ -1,31 +1,26 @@
 #!/bin/bash
 
-#Colours
-greenColour="\e[0;32m\033[1m"
-endColour="\033[0m\e[0m"
-redColour="\e[0;31m\033[1m"
-blueColour="\e[0;34m\033[1m"
-yellowColour="\e[0;33m\033[1m"
-purpleColour="\e[0;35m\033[1m"
-turquoiseColour="\e[0;36m\033[1m"
-grayColour="\e[0;37m\033[1m"
-
+# Colours
+greenColour="\033[1;32m"
+endColour="\033[0m"
+redColour="\033[1;31m"
+yellowColour="\033[1;33m"
+grayColour="\033[1;37m"
 
 check_root() {
     if [[ "$(id -u)" -ne 0 ]]; then
-        echo -e "\n${redColour}[!] Please, become sudo user to run this script.${endColour}"
+        echo -e "\n${redColour}[!] Please, run as root.${endColour}"
         exit 1
     fi
 }
 
-
 say_hello(){
 cat << "EOF"
-       ____            _        _                                   _             
-      / ___|___  _ __ | |_ __ _(_)_ __   ___ _ __   _ __ ___   __ _| | _____ _ __ 
-     | |   / _ \| '_ \| __/ _` | | '_ \ / _ \ '__| | '_ ` _ \ / _` | |/ / _ \ '__|
-     | |__| (_) | | | | || (_| | | | | |  __/ |    | | | | | | (_| |   <  __/ |   
-      \____\___/|_| |_|\__\__,_|_|_| |_|\___|_|    |_| |_| |_|\__,_|_|\_\___|_|    made by d4rkonus
+       ____            _        _                                  
+      / ___|___  _ __ | |_ __ _(_)_ __   ___ _ __                 
+     | |   / _ \| '_ \| __/ _` | | '_ \ / _ \ '__|                
+     | |__| (_) | | | | || (_| | | | | |  __/ |                   
+      \____\___/|_| |_|\__\__,_|_|_| |_|\___|_|                   
 EOF
 }
 
@@ -39,7 +34,9 @@ main_panel(){
         echo -e "${greenColour}3 - Build image${endColour}"
         echo -e "${greenColour}4 - Build container${endColour}"
         echo -e "${greenColour}5 - Execute container${endColour}"
-        echo -e "${greenColour}6 - Exit${endColour}"
+        echo -e "${greenColour}6 - Delete containers${endColour}"
+        echo -e "${greenColour}7 - Delete images${endColour}"
+        echo -e "${greenColour}8 - Exit${endColour}"
 
         read -p "[+] Select an option: " number
 
@@ -77,6 +74,18 @@ main_panel(){
                 ;;
 
             6)
+                clear
+                delete_containers
+                read -p "Press enter to continue..."
+                ;;
+
+            7)
+                clear
+                delete_images
+                read -p "Press enter to continue..."
+                ;;
+
+            8)
                 exit 0
                 ;;
 
@@ -88,54 +97,78 @@ main_panel(){
     done
 }
 
-
 check_docker(){
     if command -v docker >/dev/null 2>&1; then
-        echo -e "${greenColour}[+] Docker is installed${endColour}."
+        echo -e "${greenColour}[+] Docker is installed${endColour}"
     else
-        echo -e "${redColour}\n\n[!] Docker needs to be installed.\n"
-        sleep 2
-        echo -e "${grayColour}[+] Installing Docker..."
-        
+        echo -e "${redColour}[!] Installing Docker...${endColour}"
+
         apt update -y >/dev/null 2>&1
         apt install -y docker.io >/dev/null 2>&1
 
-        sleep 2
-        echo -e "${greenColour}[+] Docker installed successfully${endColour}\n"
-
-        echo -e "\n${yellowColour}Press Enter to continue...${endColour}"
-        read
-        clear
+        echo -e "${greenColour}[+] Docker installed${endColour}"
+        read -p "Press Enter to continue..."
     fi
 }
 
 distro_select(){
-    echo -e "\n[+] These are the Linux distributions for docker:\n"
+    echo -e "\n${yellowColour}Select distro:${endColour}"
+    echo "1) Ubuntu"
+    echo "2) Kali"
 
-    echo -e "${yellowColour}1 -> Ubuntu${endColour}"
-    echo -e "${yellowColour}2 -> Kali Linux${endColour}"
-    read -p "Select the option: " option
+    read -p "Option: " option
 
     if [[ "$option" == "1" ]]; then
         IMAGE="ubuntu_image"
-        CONTAINER="ubuntu_container_1"
-
-        echo -e "\n${yellowColour}[+] Building new ubuntu image for docker...${endColour}"
-        docker build -t "$IMAGE" -f ubuntu.dockerfile . >/dev/null 2>&1
-    
+        echo -e "${yellowColour}[+] Building Ubuntu...${endColour}"
+        docker build -t "$IMAGE" -f ubuntu.dockerfile .
 
     elif [[ "$option" == "2" ]]; then
         IMAGE="kali_image"
-        CONTAINER="kali_container_1"
-
-        echo -e "\n${yellowColour}[+] Building new kali image for docker...${endColour}"
-        docker build -t "$IMAGE" -f kali.dockerfile . >/dev/null 2>&1
-    
+        echo -e "${yellowColour}[+] Building Kali...${endColour}"
+        docker build -t "$IMAGE" -f kali.dockerfile .
 
     else
-        echo -e "\n${redColour}[!] Invalid option${endColour}"
-        exit 1
+        echo -e "${redColour}Invalid option${endColour}"
     fi
+}
+
+select_image(){
+
+    images=$(docker images --format "{{.Repository}}" | sort -u)
+
+    if [[ -z "$images" ]]; then
+        echo "No images found"
+        return 1
+    fi
+
+    echo "Available images:"
+
+    i=1
+    for img in $images; do
+        echo "$i) $img"
+        i=$((i+1))
+    done
+
+    read -p "Select image: " choice
+
+    if ! [[ "$choice" =~ ^[0-9]+$ ]]; then
+        echo "Invalid input"
+        return 1
+    fi
+
+    i=1
+    for img in $images; do
+        if [[ "$i" == "$choice" ]]; then
+            IMAGE="$img"
+            CONTAINER="$(echo "$img" | tr ':' '_')_container"
+            return
+        fi
+        i=$((i+1))
+    done
+
+    echo "Invalid option"
+    return 1
 }
 
 container_maker(){
@@ -186,14 +219,54 @@ run_container(){
     echo "Invalid option"
 }
 
+delete_containers(){
 
-select_image(){
+    containers=$(docker ps -a --format "{{.Names}}")
+
+    if [[ -z "$containers" ]]; then
+        echo "No containers found"
+        return
+    fi
+
+    echo "Available containers:"
+
+    i=1
+    for c in $containers; do
+        echo "$i) $c"
+        i=$((i+1))
+    done
+
+    echo
+    read -p "Select containers to delete (e.g. 1 2 3): " choices
+
+    for choice in $choices; do
+
+        if ! [[ "$choice" =~ ^[0-9]+$ ]]; then
+            echo "Invalid input: $choice"
+            continue
+        fi
+
+        i=1
+        for c in $containers; do
+            if [[ "$i" == "$choice" ]]; then
+                echo "[+] Deleting $c"
+                docker rm -f "$c" >/dev/null 2>&1
+            fi
+            i=$((i+1))
+        done
+
+    done
+
+    echo "Done."
+}
+
+delete_images(){
 
     images=$(docker images --format "{{.Repository}}" | sort -u)
 
     if [[ -z "$images" ]]; then
         echo "No images found"
-        return 1
+        return
     fi
 
     echo "Available images:"
@@ -204,27 +277,29 @@ select_image(){
         i=$((i+1))
     done
 
-    read -p "Select image: " choice
+    echo
+    read -p "Select images to delete (e.g. 1 2 3): " choices
 
-    if ! [[ "$choice" =~ ^[0-9]+$ ]]; then
-        echo "Invalid input"
-        return 1
-    fi
+    for choice in $choices; do
 
-    i=1
-    for img in $images; do
-        if [[ "$i" == "$choice" ]]; then
-            IMAGE="$img"
-            CONTAINER="$(echo "$img" | tr ':' '_')_container"
-            return
+        if ! [[ "$choice" =~ ^[0-9]+$ ]]; then
+            echo "Invalid input: $choice"
+            continue
         fi
-        i=$((i+1))
+
+        i=1
+        for img in $images; do
+            if [[ "$i" == "$choice" ]]; then
+                echo "[+] Deleting $img"
+                docker rmi -f "$img" >/dev/null 2>&1
+            fi
+            i=$((i+1))
+        done
+
     done
 
-    echo "Invalid option"
-    return 1
+    echo "Done."
 }
-
 
 main() {
     sleep 1
