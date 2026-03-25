@@ -26,6 +26,28 @@ distro_select() {
         echo -e "\n${redColour}[!] Invalid option.${endColour}"
         return 1
     fi
+
+    if [[ $number == "2" ]]; then
+        image="kali"
+        echo -e "\n${greenColour}[+] Bulding image...${endColour}"
+        docker build -t $image -f kali.dockerfile . &>/dev/null
+        echo -e "\n${yellowColour}[+] Kali Linux image successfully built!${endColour}"
+        pause
+    else
+        echo -e "\n${redColour}[!] Invalid option.${endColour}"
+        return 1
+    fi
+
+    if [[ $number == "3" ]]; then
+        image="arch"
+        echo -e "\n${greenColour}[+] Bulding image...${endColour}"
+        docker build -t $image -f arch.dockerfile . &>/dev/null
+        echo -e "\n${yellowColour}[+] Arch Linux image successfully built!${endColour}"
+        pause
+    else
+        echo -e "\n${redColour}[!] Invalid option.${endColour}"
+        return 1
+    fi
 }
 
 select_images(){
