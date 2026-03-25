@@ -29,21 +29,23 @@ check_root() {
 
 check_docker() {
     if command -v docker >/dev/null 2>&1; then
-        echo -e "${greenColour}[+] Docker is installed${endColour}"
+        echo -e "\n${greenColour}[+] Docker is installed${endColour}"
     else
-        echo -e "${redColour}[!] Installing Docker...${endColour}"
+        echo -e "\n${redColour}[!] Installing Docker...${endColour}"
 
         apt update -y >/dev/null 2>&1
         apt install -y docker.io >/dev/null 2>&1
 
-        echo -e "${greenColour}[+] Docker installed${endColour}"
+        echo -e "\n${greenColour}[+] Docker installed${endColour}"
         read -p "Press Enter to continue..."
     fi
 }
 
+
+
+
 main_panel(){
     while true; do
-        clear
         say_hello
 
         echo -e "\n${greenColour}1 - List images${endColour}"
@@ -55,7 +57,34 @@ main_panel(){
         echo -e "${greenColour}7 - Delete images${endColour}"
         echo -e "${greenColour}8 - Exit${endColour}"
 
-        read -p "[+] Select an option: " numberç
+        read -p "[+] Select an option: " number
+
+        case $number in
+            1)
+                clear
+                docker images >/dev/null 2>&1
+                echo ""
+                read -p "Press Enter to continue..."
+                ;;
+
+            2) 
+                clear
+                docker ps >/dev/null 2>&1
+                echo ""
+                read -p "Press Enter to continue..."
+                ;;
+
+            8)
+                clear
+                exit 0
+                ;;
+
+            *) 
+                clear
+                echo -e "\n${redColour}[!] Invalid option, try again.${endColour}"
+                read -p "Press Enter to continue..."
+                ;;
+        esac    
     done
 }
 
