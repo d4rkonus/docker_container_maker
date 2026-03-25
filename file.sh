@@ -11,13 +11,6 @@ turquoiseColour="\e[0;36m\033[1m"
 grayColour="\e[0;37m\033[1m"
 
 
-# Ocultar cursor
-tput civis
-
-# Restaurar cursor al salir
-trap 'tput cnorm' EXIT
-trap 'tput cnorm; exit 1' INT TERM
-
 check_root() {
     if [[ "$(id -u)" -ne 0 ]]; then
         echo -e "\n${redColour}[!] Please, become sudo user to run this script.${endColour}"
