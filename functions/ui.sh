@@ -29,11 +29,11 @@ main_panel() {
 
         case "$number" in
             1)
-                clear >/dev/null 2>&1
+                clear 
                 docker images >/dev/null 2>&1
                 echo -e ""
                 read -p "Press enter to continue..."
-                clear >/dev/null 2>&1
+                clear 
                 ;;
 
             2)
@@ -41,43 +41,43 @@ main_panel() {
                 docker ps -a >/dev/null 2>&1
                 echo -e ""
                 read -p "Press enter to continue..."
-                clear >/dev/null 2>&1
+                clear
                 ;;
 
             3)
-                clear >/dev/null 2>&1
+                clear
                 distro_select
                 read -p "Press enter to continue..."
-                clear >/dev/null 2>&1
+                clear
                 ;;
 
             4)
-                clear >/dev/null 2>&1
+                clear
                 container_maker
                 read -p "Press enter to continue..."
-                clear >/dev/null 2>&1
+                clear
                 ;;
 
             5)
-                clear >/dev/null 2>&1
+                clear
                 run_container
                 read -p "Press enter to continue..."
-                clear >/dev/null 2>&1
+                clear
 
                 ;;
 
             6)
-                clear >/dev/null 2>&1
+                clear 
                 delete_containers
                 read -p "Press enter to continue..."
-                clear >/dev/null 2>&1
+                clear
                 ;;
 
             7)
-                clear >/dev/null 2>&1
+                clear 
                 delete_images
                 read -p "Press enter to continue..."
-                clear >/dev/null 2>&1
+                clear
                 ;;
 
             8)
