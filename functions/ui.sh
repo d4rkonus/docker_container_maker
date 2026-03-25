@@ -13,7 +13,7 @@ EOF
 
 main_panel() {
     while true; do
-        clear
+        clear >/dev/null 2>&1
         say_hello
 
         echo -e "\n${greenColour}1 - List images${endColour}"
@@ -29,45 +29,45 @@ main_panel() {
 
         case "$number" in
             1)
-                clear
-                docker images
+                clear >/dev/null 2>&1
+                docker images >/dev/null 2>&1
                 echo -e ""
                 read -p "Press enter to continue..."
                 ;;
 
             2)
-                clear
-                docker ps -a
+                clear >/dev/null 2>&1
+                docker ps -a >/dev/null 2>&1
                 echo -e ""
                 read -p "Press enter to continue..."
                 ;;
 
             3)
-                clear
+                clear >/dev/null 2>&1
                 distro_select
                 read -p "Press enter to continue..."
                 ;;
 
             4)
-                clear
+                clear >/dev/null 2>&1
                 container_maker
                 read -p "Press enter to continue..."
                 ;;
 
             5)
-                clear
+                clear >/dev/null 2>&1
                 run_container
                 read -p "Press enter to continue..."
                 ;;
 
             6)
-                clear
+                clear >/dev/null 2>&1
                 delete_containers
                 read -p "Press enter to continue..."
                 ;;
 
             7)
-                clear
+                clear >/dev/null 2>&1
                 delete_images
                 read -p "Press enter to continue..."
                 ;;
@@ -78,7 +78,7 @@ main_panel() {
 
             *)
                 echo -e "${redColour}[!] Invalid option.${endColour}"
-                sleep 1
+                sleep 1 >/dev/null 2>&1
                 ;;
         esac
     done

@@ -10,12 +10,12 @@ distro_select() {
     if [[ "$option" == "1" ]]; then
         IMAGE="ubuntu_image"
         echo -e "${yellowColour}[+] Building Ubuntu...${endColour}"
-        docker build -t "$IMAGE" -f ubuntu.dockerfile .
+        docker build -t "$IMAGE" -f ubuntu.dockerfile . >/dev/null 2>&1
 
     elif [[ "$option" == "2" ]]; then
         IMAGE="kali_image"
         echo -e "${yellowColour}[+] Building Kali...${endColour}"
-        docker build -t "$IMAGE" -f kali.dockerfile .
+        docker build -t "$IMAGE" -f kali.dockerfile . >/dev/null 2>&1
 
     else
         echo -e "${redColour}Invalid option${endColour}"
@@ -23,7 +23,7 @@ distro_select() {
 }
 
 select_image() {
-    images=$(docker images --format "{{.Repository}}" | sort -u)
+    images=$(docker images --format "{{.Repository}}" 2>/dev/null | sort -u 2>/dev/null)
 
     if [[ -z "$images" ]]; then
         echo -e "${redColour}[!] No images found${endColour}"
@@ -60,7 +60,7 @@ select_image() {
 }
 
 delete_images() {
-    images=$(docker images --format "{{.Repository}}" | sort -u)
+    images=$(docker images --format "{{.Repository}}" 2>/dev/null | sort -u 2>/dev/null)
 
     if [[ -z "$images" ]]; then
         echo -e "${redColour}[!] No images found${endColour}"

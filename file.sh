@@ -15,7 +15,7 @@ source "$SCRIPT_DIR/functions/containers.sh"
 source "$SCRIPT_DIR/functions/ui.sh"
 
 main() {
-    sleep 1
+    sleep 1 >/dev/null 2>&1
     check_root
     check_docker
     main_panel

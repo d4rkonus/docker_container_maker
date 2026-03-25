@@ -12,7 +12,7 @@ container_maker() {
 }
 
 run_container() {
-    containers=$(docker ps -a --format "{{.Names}}")
+    containers=$(docker ps -a --format "{{.Names}}" 2>/dev/null)
 
     if [[ -z "$containers" ]]; then
         echo -e "${redColour}[!] No containers found${endColour}"
@@ -38,7 +38,7 @@ run_container() {
     for c in $containers; do
         if [[ "$i" == "$choice" ]]; then
             docker start "$c" >/dev/null 2>&1
-            docker exec -it "$c" bash
+            docker exec -it "$c" bash 2>/dev/null
             return
         fi
         i=$((i + 1))
@@ -48,7 +48,7 @@ run_container() {
 }
 
 delete_containers() {
-    containers=$(docker ps -a --format "{{.Names}}")
+    containers=$(docker ps -a --format "{{.Names}}" 2>/dev/null)
 
     if [[ -z "$containers" ]]; then
         echo -e "${redColour}[!] No containers found${endColour}"
